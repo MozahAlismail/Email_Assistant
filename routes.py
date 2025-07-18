@@ -1,6 +1,6 @@
 import os
+from dotenv import load_dotenv
 
-from starlette.config import Config
 from openai import OpenAI
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -11,12 +11,15 @@ from database import get_session
 
 from crud import crud_email_logs
 
-current_file_dir = os.path.dirname(os.path.realpath(__file__))
-env_path = os.path.join(current_file_dir, ".env")
+# Load environment variables from .env file (if it exists)
+load_dotenv()
 
-config = Config(env_path)
+# Get API key from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-OPENAI_API_KEY = config("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is not set")
+
 open_ai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ------- email -------
