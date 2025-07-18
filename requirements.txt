@@ -6,3 +6,4 @@ sqlalchemy
 sqlmodel
 aiosqlite
 python-dotenv
+fastcrud

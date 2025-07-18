@@ -2,8 +2,8 @@ import os
 import sys
 
 from fastapi import FastAPI
-from .database import create_db_and_tables
-from .routes import email_router, log_router
+from database import create_db_and_tables
+from routes import email_router, log_router
 from pydantic_settings import BaseSettings
 from fastapi.logger import logger
 

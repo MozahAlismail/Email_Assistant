@@ -5,11 +5,11 @@ from openai import OpenAI
 from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from .schemas import EmailRequest, EmailResponse
-from .schemas import EmailLogCreate, EmailLogRead
-from .database import get_session
+from schemas import EmailRequest, EmailResponse
+from schemas import EmailLogCreate, EmailLogRead
+from database import get_session
 
-from .crud import crud_email_logs
+from crud import crud_email_logs
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
 env_path = os.path.join(current_file_dir, ".env")
