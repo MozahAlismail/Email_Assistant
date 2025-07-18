@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Email Assistant</h1>
+        <p style="text-align: center; color: #666;">Generate professional emails using AI</p>
+        
+        <form id="emailForm">
+            <div class="form-group">
+                <label for="userInput">What kind of email do you want to write? *</label>
+                <textarea id="userInput" placeholder="e.g., Thank you email for the meeting, Follow-up on project status..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="replyTo">Reply To (optional)</label>
+                <input type="email" id="replyTo" placeholder="john@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="context">Context (optional)</label>
+                <textarea id="context" placeholder="Additional context about the email..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="tone">Tone</label>
+                <select id="tone">
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="formal">Formal</option>
+                    <option value="casual">Casual</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="length">Maximum Length (characters)</label>
+                <input type="number" id="length" value="300" min="50" max="1000">
+            </div>
+            
+            <button type="submit">Generate Email ✨</button>
+        </form>
+        
+        <div id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('emailForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const button = form.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Generating...';
+            
+            resultDiv.innerHTML = '<div class="loading">🤖 Generating your email...</div>';
+            resultDiv.style.display = 'block';
+            
+            try {
+                const formData = {
+                    user_input: document.getElementById('userInput').value,
+                    reply_to: document.getElementById('replyTo').value || null,
+                    context: document.getElementById('context').value || null,
+                    tone: document.getElementById('tone').value,
+                    length: parseInt(document.getElementById('length').value)
+                };
+                
+                const response = await fetch('/generate/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <h3>📧 Generated Email:</h3>
+                        <div style="background: white; padding: 15px; border-radius: 5px; border: 1px solid #ddd; white-space: pre-wrap;">${data.generated_email}</div>
+                    `;
+                    resultDiv.className = 'result';
+                } else {
+                    throw new Error(data.detail || 'Something went wrong');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+                resultDiv.className = 'result error';
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Generate Email ✨';
+        });
+    </script>
+</body>
+</html>

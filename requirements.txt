@@ -1,14 +1,10 @@
 fastapi
 uvicorn[standard]
 pydantic_settings
-huggingface_hub
 sqlalchemy
 sqlmodel
 aiosqlite
 aiomysql
-asyncpg
-psycopg2-binary
 python-dotenv
 fastcrud
 requests
-nest_asyncio
