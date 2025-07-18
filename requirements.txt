@@ -5,6 +5,9 @@ huggingface_hub
 sqlalchemy
 sqlmodel
 aiosqlite
+aiomysql
+asyncpg
+psycopg2-binary
 python-dotenv
 fastcrud
 requests

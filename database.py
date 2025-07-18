@@ -2,8 +2,13 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from typing import AsyncGenerator
+import os
+from dotenv import load_dotenv
 
-DATABASE_URL = "sqlite+aiosqlite:///./emailassistant.db"
+load_dotenv()
+
+# Get database URL from environment variables (fallback to SQLite for local development)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./emailassistant.db")
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 async_session = sessionmaker(
