@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pydantic_settings
+openai
+sqlalchemy
+sqlmodel
+aiosqlite
+python-dotenv
