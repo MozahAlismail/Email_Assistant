@@ -16,7 +16,7 @@ if not HF_TOKEN:
     raise ValueError("HF_TOKEN environment variable is not set")
 
 # Simple Hugging Face API setup
-HF_API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
+HF_API_URL = "https://huggingface.co/meta-llama/Llama-2-7b-chat-hf"
 HF_HEADERS = {"Authorization": f"Bearer {HF_TOKEN}"}
 
 def query_huggingface(payload):
