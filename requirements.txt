@@ -2,8 +2,6 @@ fastapi
 uvicorn[standard]
 pydantic_settings
 huggingface_hub
-transformers
-torch
 sqlalchemy
 sqlmodel
 aiosqlite
