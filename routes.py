@@ -16,9 +16,12 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 if not HF_TOKEN:
     raise ValueError("HF_TOKEN environment variable is not set")
 
-# Simple Hugging Face API setup
-HF_API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
-HF_HEADERS = {"Authorization": f"Bearer {HF_TOKEN}"}
+# Hugging Face Router API setup
+HF_API_URL = "https://router.huggingface.co/v1/chat/completions"
+HF_HEADERS = {
+    "Authorization": f"Bearer {HF_TOKEN}",
+    "Content-Type": "application/json"
+}
 
 # Debug logging
 print(f"🔑 HF_TOKEN (first 10 chars): {HF_TOKEN[:10]}...")
@@ -59,7 +62,7 @@ async def generate_email(request: EmailRequest, db: AsyncSession = Depends(get_s
     try:
         print(f"🎯 Starting email generation for: {request.user_input}")
         
-        # Proper Llama2 Chat Format
+        # System and user messages for ChatCompletion
         system_message = "You are a professional email assistant. Write clear, appropriate emails based on user requests."
         
         user_message = f"""Write an email with these details:
@@ -68,40 +71,40 @@ async def generate_email(request: EmailRequest, db: AsyncSession = Depends(get_s
 - Context: {request.context if request.context else 'N/A'}
 - Tone: {request.tone if request.tone else 'professional'}
 
-Write only the email content:"""
+Write only the email content."""
 
-        # Llama2 Chat Template
-        llama_prompt = f"<s>[INST] <<SYS>>\n{system_message}\n<</SYS>>\n\n{user_message} [/INST]"
+        print(f"📝 User message (first 200 chars): {user_message[:200]}...")
         
-        print(f"📝 Generated prompt (first 200 chars): {llama_prompt[:200]}...")
-        
-        # Optimized Llama2 Parameters
+        # Chat Completion API Format (like OpenAI)
         payload = {
-            "inputs": llama_prompt,
-            "parameters": {
-                "max_new_tokens": min(request.length or 300, 500),
-                "temperature": 0.7,
-                "top_p": 0.9,
-                "do_sample": True,
-                "return_full_text": False,
-                "repetition_penalty": 1.1
-            }
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_message
+                },
+                {
+                    "role": "user", 
+                    "content": user_message
+                }
+            ],
+            "model": "deepseek-ai/DeepSeek-R1",
+            "max_tokens": min(request.length or 300, 500),
+            "temperature": 0.7
         }
         
         print("🚀 Calling Hugging Face API...")
         response = query_huggingface(payload)
         print(f"📥 Received response: {response}")
         
-        # Extract and clean response
-        if isinstance(response, list) and len(response) > 0:
-            generated_email = response[0]["generated_text"]
-            print(f"📧 Extracted from list: {generated_email[:100]}...")
+        # Extract response from ChatCompletion format
+        if "choices" in response and len(response["choices"]) > 0:
+            generated_email = response["choices"][0]["message"]["content"]
+            print(f"📧 Extracted from choices: {generated_email[:100]}...")
         else:
-            generated_email = response["generated_text"]
-            print(f"📧 Extracted from dict: {generated_email[:100]}...")
+            raise HTTPException(status_code=500, detail="Unexpected response format from API")
             
-        # Clean Llama2 tokens
-        generated_email = generated_email.replace("</s>", "").strip()
+        # Clean any extra formatting
+        generated_email = generated_email.strip()
         print(f"🧹 Cleaned email: {generated_email[:100]}...")
 
         # Save to database
