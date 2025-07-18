@@ -1,9 +1,12 @@
 fastapi
 uvicorn[standard]
 pydantic_settings
-openai
+huggingface_hub
+transformers
+torch
 sqlalchemy
 sqlmodel
 aiosqlite
 python-dotenv
 fastcrud
+requests
