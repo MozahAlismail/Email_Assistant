@@ -43,12 +43,13 @@ async def generate_email(request: EmailRequest, db: AsyncSession = Depends(get_s
         system_message = "You are a professional email assistant. Write clear, appropriate emails based on user requests."
         
         user_message = f"""Write an email with these details:
-- Request: {request.user_input}
-- Reply to: {request.reply_to if request.reply_to else 'N/A'}
-- Context: {request.context if request.context else 'N/A'}
-- Tone: {request.tone if request.tone else 'professional'}
+                            - Request: {request.user_input}
+                            - Reply to: {request.reply_to if request.reply_to else 'N/A'}
+                            - Context: {request.context if request.context else 'N/A'}
+                            - Tone: {request.tone if request.tone else 'professional'}
 
-Write only the email content:"""
+                            Write only the email content:
+                        """
 
         # Llama2 Chat Template
         llama_prompt = f"<s>[INST] <<SYS>>\n{system_message}\n<</SYS>>\n\n{user_message} [/INST]"
